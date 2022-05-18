@@ -37,6 +37,10 @@ VPS is sponsored by Uptime Kuma sponsors on [Open Collective](https://opencollec
 
 ## 🔧 How to Install
 
+### 🖱️ One click deploy
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Olyno/uptime-kuma-docker)
+
 ### 🐳 Docker
 
 ```bash
