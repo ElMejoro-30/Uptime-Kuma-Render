@@ -46,6 +46,10 @@ export default {
                 }
                 return this.userTheme;
             }
+        },
+
+        isDark() {
+            return this.theme === "dark";
         }
     },
 
@@ -75,6 +79,7 @@ export default {
     },
 
     methods: {
+        /** Update the theme color meta tag */
         updateThemeColorMeta() {
             if (this.theme === "dark") {
                 document.querySelector("#theme-color").setAttribute("content", "#161B22");

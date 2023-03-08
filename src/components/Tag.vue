@@ -18,16 +18,28 @@
 </template>
 
 <script>
+/**
+* @typedef {import('./TagsManager.vue').Tag} Tag
+*/
+
 export default {
     props: {
+        /** Object representing tag
+         * @type {Tag}
+         */
         item: {
             type: Object,
             required: true,
         },
+        /** Function to remove tag */
         remove: {
             type: Function,
             default: null,
         },
+        /**
+         * Size of tag
+         * @type {"normal" | "small"}
+         */
         size: {
             type: String,
             default: "normal",
@@ -35,7 +47,7 @@ export default {
     },
     computed: {
         displayText() {
-            if (this.item.value === "") {
+            if (this.item.value === "" || this.item.value === undefined) {
                 return this.item.name;
             } else {
                 return `${this.item.name}: ${this.item.value}`;

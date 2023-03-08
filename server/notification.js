@@ -1,38 +1,53 @@
 const { R } = require("redbean-node");
-const Apprise = require("./notification-providers/apprise");
-const Discord = require("./notification-providers/discord");
-const Gotify = require("./notification-providers/gotify");
-const Line = require("./notification-providers/line");
-const LunaSea = require("./notification-providers/lunasea");
-const Mattermost = require("./notification-providers/mattermost");
-const Matrix = require("./notification-providers/matrix");
-const Octopush = require("./notification-providers/octopush");
-const PromoSMS = require("./notification-providers/promosms");
-const ClickSendSMS = require("./notification-providers/clicksendsms");
-const Pushbullet = require("./notification-providers/pushbullet");
-const Pushover = require("./notification-providers/pushover");
-const Pushy = require("./notification-providers/pushy");
-const TechulusPush = require("./notification-providers/techulus-push");
-const RocketChat = require("./notification-providers/rocket-chat");
-const Signal = require("./notification-providers/signal");
-const Slack = require("./notification-providers/slack");
-const SMTP = require("./notification-providers/smtp");
-const Teams = require("./notification-providers/teams");
-const Telegram = require("./notification-providers/telegram");
-const Webhook = require("./notification-providers/webhook");
-const Feishu = require("./notification-providers/feishu");
-const AliyunSms = require("./notification-providers/aliyun-sms");
-const DingDing = require("./notification-providers/dingding");
-const Bark = require("./notification-providers/bark");
 const { log } = require("../src/util");
-const SerwerSMS = require("./notification-providers/serwersms");
-const Stackfield = require("./notification-providers/stackfield");
-const WeCom = require("./notification-providers/wecom");
+const Alerta = require("./notification-providers/alerta");
+const AlertNow = require("./notification-providers/alertnow");
+const AliyunSms = require("./notification-providers/aliyun-sms");
+const Apprise = require("./notification-providers/apprise");
+const Bark = require("./notification-providers/bark");
+const ClickSendSMS = require("./notification-providers/clicksendsms");
+const DingDing = require("./notification-providers/dingding");
+const Discord = require("./notification-providers/discord");
+const Feishu = require("./notification-providers/feishu");
+const FreeMobile = require("./notification-providers/freemobile");
 const GoogleChat = require("./notification-providers/google-chat");
 const Gorush = require("./notification-providers/gorush");
-const Alerta = require("./notification-providers/alerta");
+const Gotify = require("./notification-providers/gotify");
+const HomeAssistant = require("./notification-providers/home-assistant");
+const Kook = require("./notification-providers/kook");
+const Line = require("./notification-providers/line");
+const LineNotify = require("./notification-providers/linenotify");
+const LunaSea = require("./notification-providers/lunasea");
+const Matrix = require("./notification-providers/matrix");
+const Mattermost = require("./notification-providers/mattermost");
+const Ntfy = require("./notification-providers/ntfy");
+const Octopush = require("./notification-providers/octopush");
 const OneBot = require("./notification-providers/onebot");
+const PagerDuty = require("./notification-providers/pagerduty");
+const PagerTree = require("./notification-providers/pagertree");
+const PromoSMS = require("./notification-providers/promosms");
+const Pushbullet = require("./notification-providers/pushbullet");
 const PushDeer = require("./notification-providers/pushdeer");
+const Pushover = require("./notification-providers/pushover");
+const Pushy = require("./notification-providers/pushy");
+const RocketChat = require("./notification-providers/rocket-chat");
+const SerwerSMS = require("./notification-providers/serwersms");
+const Signal = require("./notification-providers/signal");
+const Slack = require("./notification-providers/slack");
+const SMSEagle = require("./notification-providers/smseagle");
+const SMTP = require("./notification-providers/smtp");
+const Squadcast = require("./notification-providers/squadcast");
+const Stackfield = require("./notification-providers/stackfield");
+const Teams = require("./notification-providers/teams");
+const TechulusPush = require("./notification-providers/techulus-push");
+const Telegram = require("./notification-providers/telegram");
+const Splunk = require("./notification-providers/splunk");
+const Webhook = require("./notification-providers/webhook");
+const WeCom = require("./notification-providers/wecom");
+const GoAlert = require("./notification-providers/goalert");
+const SMSManager = require("./notification-providers/smsmanager");
+const ServerChan = require("./notification-providers/serverchan");
+const ZohoCliq = require("./notification-providers/zoho-cliq");
 
 class Notification {
 
@@ -45,39 +60,54 @@ class Notification {
         this.providerList = {};
 
         const list = [
-            new Apprise(),
+            new Alerta(),
+            new AlertNow(),
             new AliyunSms(),
+            new Apprise(),
+            new Bark(),
+            new ClickSendSMS(),
             new DingDing(),
             new Discord(),
-            new Teams(),
-            new Gotify(),
-            new Line(),
-            new LunaSea(),
             new Feishu(),
-            new Mattermost(),
-            new Matrix(),
-            new Octopush(),
-            new PromoSMS(),
-            new ClickSendSMS(),
-            new Pushbullet(),
-            new Pushover(),
-            new Pushy(),
-            new TechulusPush(),
-            new RocketChat(),
-            new Signal(),
-            new Slack(),
-            new SMTP(),
-            new Telegram(),
-            new Webhook(),
-            new Bark(),
-            new SerwerSMS(),
-            new Stackfield(),
-            new WeCom(),
+            new FreeMobile(),
             new GoogleChat(),
             new Gorush(),
-            new Alerta(),
+            new Gotify(),
+            new HomeAssistant(),
+            new Kook(),
+            new Line(),
+            new LineNotify(),
+            new LunaSea(),
+            new Matrix(),
+            new Mattermost(),
+            new Ntfy(),
+            new Octopush(),
             new OneBot(),
+            new PagerDuty(),
+            new PagerTree(),
+            new PromoSMS(),
+            new Pushbullet(),
             new PushDeer(),
+            new Pushover(),
+            new Pushy(),
+            new RocketChat(),
+            new ServerChan(),
+            new SerwerSMS(),
+            new Signal(),
+            new SMSManager(),
+            new Slack(),
+            new SMSEagle(),
+            new SMTP(),
+            new Squadcast(),
+            new Stackfield(),
+            new Teams(),
+            new TechulusPush(),
+            new Telegram(),
+            new Splunk(),
+            new Webhook(),
+            new WeCom(),
+            new GoAlert(),
+            new ZohoCliq()
         ];
 
         for (let item of list) {

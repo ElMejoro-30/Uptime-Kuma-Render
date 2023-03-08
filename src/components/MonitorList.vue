@@ -19,7 +19,7 @@
                 {{ $t("No Monitors, please") }} <router-link to="/add">{{ $t("add one") }}</router-link>
             </div>
 
-            <router-link v-for="(item, index) in sortedMonitorList" :key="index" :to="monitorURL(item.id)" class="item" :class="{ 'disabled': ! item.active }">
+            <router-link v-for="(item, index) in sortedMonitorList" :key="index" :to="monitorURL(item.id)" class="item" :class="{ 'disabled': ! item.active }" :title="item.description">
                 <div class="row">
                     <div class="col-9 col-md-8 small-padding" :class="{ 'monitor-item': $root.userHeartbeatBar == 'bottom' || $root.userHeartbeatBar == 'none' }">
                         <div class="info">
@@ -58,6 +58,7 @@ export default {
         Tag,
     },
     props: {
+        /** Should the scrollbar be shown */
         scrollbar: {
             type: Boolean,
         },
@@ -69,10 +70,22 @@ export default {
         };
     },
     computed: {
+        /**
+         * Improve the sticky appearance of the list by increasing its
+         * height as user scrolls down.
+         * Not used on mobile.
+         */
         boxStyle() {
-            return {
-                height: `calc(100vh - 160px + ${this.windowTop}px)`,
-            };
+            if (window.innerWidth > 550) {
+                return {
+                    height: `calc(100vh - 160px + ${this.windowTop}px)`,
+                };
+            } else {
+                return {
+                    height: "calc(100vh - 160px)",
+                };
+            }
+
         },
 
         sortedMonitorList() {
@@ -124,6 +137,7 @@ export default {
         window.removeEventListener("scroll", this.onScroll);
     },
     methods: {
+        /** Handle user scroll */
         onScroll() {
             if (window.top.scrollY <= 133) {
                 this.windowTop = window.top.scrollY;
@@ -131,9 +145,15 @@ export default {
                 this.windowTop = 133;
             }
         },
+        /**
+         * Get URL of monitor
+         * @param {number} id ID of monitor
+         * @returns {string} Relative URL of monitor
+         */
         monitorURL(id) {
             return getMonitorRelativeURL(id);
         },
+        /** Clear the search bar */
         clearSearchText() {
             this.searchText = "";
         }
@@ -186,6 +206,16 @@ export default {
 .search-icon {
     padding: 10px;
     color: #c0c0c0;
+
+    // Clear filter button (X)
+    svg[data-icon="times"] {
+        cursor: pointer;
+        transition: all ease-in-out 0.1s;
+
+        &:hover {
+            opacity: 0.5;
+        }
+    }
 }
 
 .search-input {

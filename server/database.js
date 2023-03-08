@@ -4,6 +4,7 @@ const { setSetting, setting } = require("./util-server");
 const { log, sleep } = require("../src/util");
 const dayjs = require("dayjs");
 const knex = require("knex");
+const { PluginsManager } = require("./plugins-manager");
 
 /**
  * Database & App Data Folder
@@ -53,11 +54,25 @@ class Database {
         "patch-2fa-invalidate-used-token.sql": true,
         "patch-notification_sent_history.sql": true,
         "patch-monitor-basic-auth.sql": true,
+        "patch-add-docker-columns.sql": true,
         "patch-status-page.sql": true,
         "patch-proxy.sql": true,
         "patch-monitor-expiry-notification.sql": true,
         "patch-status-page-footer-css.sql": true,
         "patch-added-mqtt-monitor.sql": true,
+        "patch-add-clickable-status-page-link.sql": true,
+        "patch-add-sqlserver-monitor.sql": true,
+        "patch-add-other-auth.sql": { parents: [ "patch-monitor-basic-auth.sql" ] },
+        "patch-grpc-monitor.sql": true,
+        "patch-add-radius-monitor.sql": true,
+        "patch-monitor-add-resend-interval.sql": true,
+        "patch-ping-packet-size.sql": true,
+        "patch-maintenance-table2.sql": true,
+        "patch-add-gamedig-monitor.sql": true,
+        "patch-add-google-analytics-status-page-tag.sql": true,
+        "patch-http-body-encoding.sql": true,
+        "patch-add-description-monitor.sql": true,
+        "patch-api-key-table.sql": true,
     };
 
     /**
@@ -75,6 +90,13 @@ class Database {
     static init(args) {
         // Data Directory (must be end with "/")
         Database.dataDir = process.env.DATA_DIR || args["data-dir"] || "./data/";
+
+        // Plugin feature is working only if the dataDir = "./data";
+        if (Database.dataDir !== "./data/") {
+            log.warn("PLUGIN", "Warning: In order to enable plugin feature, you need to use the default data directory: ./data/");
+            PluginsManager.disable = true;
+        }
+
         Database.path = Database.dataDir + "kuma.db";
         if (! fs.existsSync(Database.dataDir)) {
             fs.mkdirSync(Database.dataDir, { recursive: true });
@@ -175,7 +197,13 @@ class Database {
         } else {
             log.info("db", "Database patch is needed");
 
-            this.backup(version);
+            try {
+                this.backup(version);
+            } catch (e) {
+                log.error("db", e);
+                log.error("db", "Unable to create a backup before patching the database. Please make sure you have enough space and permission.");
+                process.exit(1);
+            }
 
             // Try catch anything here, if gone wrong, restore the backup
             try {
@@ -443,6 +471,23 @@ class Database {
                 this.backupWalPath = walPath + ".bak" + version;
                 fs.copyFileSync(walPath, this.backupWalPath);
             }
+
+            // Double confirm if all files actually backup
+            if (!fs.existsSync(this.backupPath)) {
+                throw new Error("Backup failed! " + this.backupPath);
+            }
+
+            if (fs.existsSync(shmPath)) {
+                if (!fs.existsSync(this.backupShmPath)) {
+                    throw new Error("Backup failed! " + this.backupShmPath);
+                }
+            }
+
+            if (fs.existsSync(walPath)) {
+                if (!fs.existsSync(this.backupWalPath)) {
+                    throw new Error("Backup failed! " + this.backupWalPath);
+                }
+            }
         }
     }
 
@@ -453,6 +498,16 @@ class Database {
 
             const shmPath = Database.path + "-shm";
             const walPath = Database.path + "-wal";
+
+            // Make sure we have a backup to restore before deleting old db
+            if (
+                !fs.existsSync(this.backupPath)
+                && !fs.existsSync(shmPath)
+                && !fs.existsSync(walPath)
+            ) {
+                log.error("db", "Backup file not found! Leaving database in failed state.");
+                process.exit(1);
+            }
 
             // Delete patch failed db
             try {
